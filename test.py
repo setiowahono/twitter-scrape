@@ -1,9 +1,5 @@
-import snscrape.modules.twitter as sntwitter
+import pandas as pd
 
-tweets_list = []
+df = pd.read_csv('tweet_@BANKBRI_ID_1000.csv', on_bad_lines='skip', delimiter=',')
 
-for i, tweet in enumerate(sntwitter.TwitterTweetScraper(tweetId=1629095687953715202, mode=sntwitter.TwitterTweetScraperMode.SCROLL).get_items()):
-    tweets_list.append([tweet.date, tweet.url, tweet.id, tweet.username, tweet.rawContent, tweet.content,
-                        tweet.replyCount, tweet.retweetCount, tweet.likeCount, tweet.quoteCount, tweet.links, tweet.inReplyToTweetId, True])
-    
-print(tweets_list)
+print(df.head(100))
