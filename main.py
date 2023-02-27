@@ -6,25 +6,83 @@ import snscrape.modules.twitter as sntwitter
 import pandas as pd
 import snscrape.modules.twitter as sntwitter
 
-username = '@BANKBRI_ID'
+filter_string = '@BANKBRI_ID'
 since = '2023-01-01'
 until = '2023-02-28'
 
-maxTweets = 1000
+maxTweets = 100
 tweets_list = []
-for i, tweet in enumerate(sntwitter.TwitterSearchScraper(f'{username} since:{since} until:{until}').get_items()):
-    if (tweet.replyCount > 0 and tweet.inReplyToTweetId != None):
-        tweets_list.append([tweet.date, tweet.url, tweet.id, tweet.username, tweet.rawContent, tweet.content,
-                            tweet.replyCount, tweet.retweetCount, tweet.likeCount, tweet.quoteCount, tweet.links, tweet.inReplyToTweetId, False])
-        
-        for y, parentTweet in enumerate(sntwitter.TwitterTweetScraper(tweet.inReplyToTweetId).get_items()):
-            tweets_list.append([parentTweet.date, parentTweet.url, parentTweet.id, parentTweet.username, parentTweet.rawContent, parentTweet.content,
-                                parentTweet.replyCount, parentTweet.retweetCount, parentTweet.likeCount, parentTweet.quoteCount, parentTweet.links, tweet.inReplyToTweetId, True])
-            
-        if i > maxTweets:
-            break
+j = 1
 
-df = pd.DataFrame(tweets_list, columns=['Datetime', 'URL', 'Tweet Id', 'Username', 'Raw Text',
-                  'Text', 'Reply Count', 'Retweet Count', 'Like Count', 'Quote Count', 'Links', 'Reply to ID', 'Is Parent'])
+for i, tweet in enumerate(sntwitter.TwitterSearchScraper(f'{filter_string} since:{since} until:{until}').get_items()):
+    if (tweet.replyCount > 0 and tweet.inReplyToTweetId == None):
+        for x, tweet2 in enumerate(sntwitter.TwitterTweetScraper(tweetId=tweet.id, mode=sntwitter.TwitterTweetScraperMode.SCROLL).get_items()):
+            tweets_list.append([
+                tweet2.url,
+                tweet2.date,
+                tweet2.rawContent,
+                tweet2.renderedContent,
+                tweet2.id,
+                tweet2.user,
+                tweet2.replyCount,
+                tweet2.retweetCount,
+                tweet2.likeCount,
+                tweet2.quoteCount,
+                tweet2.conversationId,
+                tweet2.lang,
+                tweet2.source,
+                tweet2.sourceUrl,
+                tweet2.sourceLabel,
+                tweet2.links,
+                tweet2.media,
+                tweet2.retweetedTweet,
+                tweet2.quotedTweet,
+                tweet2.inReplyToTweetId,
+                tweet2.inReplyToUser,
+                tweet2.mentionedUsers,
+                tweet2.coordinates,
+                tweet2.place,
+                tweet2.hashtags,
+                tweet2.cashtags,
+                tweet2.card,
+                tweet2.viewCount,
+                tweet2.vibe,
+            ])
+        j = j + 1
 
-df.to_csv(f'tweet_{username}_2.csv', index=False)
+    if j > maxTweets:
+        break
+
+df = pd.DataFrame(tweets_list, columns=[
+    'url',
+    'date',
+    'rawContent',
+    'renderedContent',
+    'id',
+    'user',
+    'replyCount',
+    'retweetCount',
+    'likeCount',
+    'quoteCount',
+    'conversationId',
+    'lang',
+    'source',
+    'sourceUrl',
+    'sourceLabel',
+    'links',
+    'media',
+    'retweetedTweet',
+    'quotedTweet',
+    'inReplyToTweetId',
+    'inReplyToUser',
+    'mentionedUsers',
+    'coordinates',
+    'place',
+    'hashtags',
+    'cashtags',
+    'card',
+    'viewCount',
+    'vibe',
+])
+
+df.to_csv(f'tweet_{filter_string}_100.csv', index=False)
