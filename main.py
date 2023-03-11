@@ -1,14 +1,10 @@
-#!pip install snscrape
-#!pip install git+https://github.com/JustAnotherArchivist/snscrape.git
-#!pip install pandas
-
 import snscrape.modules.twitter as sntwitter
 import pandas as pd
 import snscrape.modules.twitter as sntwitter
 
-filter_string = '@BANKBRI_ID'
+filter_string = '@BankBCA'
 since = '2023-01-01'
-until = '2023-02-28'
+until = '2023-01-31'
 
 maxTweets = 100
 tweets_list = []
